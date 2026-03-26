@@ -1,7 +1,7 @@
 Group Members:
 Ibrashov Anuar,
 Ibrayev Miras,
-Jumagali Elgeldi,
+Zhumagali Elgeldi,
 
 Project: FightTrack
 
