@@ -1,0 +1,42 @@
+<section class="panel panel-large">
+  <div class="panel-header">
+    <div>
+      <p class="section-label">Leaderboard</p>
+      <h3>Top fighters by trust score and verified reviews</h3>
+    </div>
+    <span class="panel-counter">{{ entries().length }} fighters</span>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">Loading leaderboard...</p>
+  } @else if (errorMessage()) {
+    <div class="banner error-banner">{{ errorMessage() }}</div>
+  } @else if (!entries().length) {
+    <div class="empty-state">No fighters available yet.</div>
+  } @else {
+    <div class="leaderboard-table">
+      @for (entry of entries(); track entry.username) {
+        <article class="leaderboard-row">
+          <div class="rank-badge">#{{ entry.rank }}</div>
+          <div>
+            <strong>{{ entry.username }}</strong>
+            <p class="muted">{{ entry.achievements }}</p>
+            @if (entry.top_experiences.length) {
+              <div class="chip-list">
+                @for (experience of entry.top_experiences; track experience) {
+                  <span class="chip">{{ experience }}</span>
+                }
+              </div>
+            }
+          </div>
+          <div class="leaderboard-metrics">
+            <span>{{ entry.rating }} trust</span>
+            <span>{{ entry.average_review_score }}/5 reviews</span>
+            <span>{{ entry.total_reviews }} ratings</span>
+            <span>{{ entry.total_fights }} accepted</span>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

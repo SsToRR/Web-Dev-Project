@@ -1,1 +1,100 @@
-/* You can add global styles to this file, and also import other style files */
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: 'Space Grotesk', 'Trebuchet MS', 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 141, 90, 0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(255, 214, 165, 0.12), transparent 18%),
+    linear-gradient(180deg, #080b12 0%, #111827 55%, #1a1114 100%);
+  color: #f6f1eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.plus-button {
+  min-width: 44px;
+  padding-inline: 0;
+  font-size: 1.4rem;
+}
+
+.fighter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.chip {
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f7dcc1;
+  font-size: 13px;
+}
+
+.stats-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #f7dcc1;
+  font-size: 13px;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.subsection {
+  margin-top: 24px;
+}
+
+.subsection-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.experience-list {
+  display: grid;
+  gap: 12px;
+}
+
+.experience-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 120px 120px auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.compact-button {
+  padding: 12px 14px;
+}
+
+@media (max-width: 900px) {
+  .fighter-grid,
+  .experience-row {
+    grid-template-columns: 1fr;
+  }
+}

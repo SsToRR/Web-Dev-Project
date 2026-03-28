@@ -1,0 +1,168 @@
+<section class="page-grid single-column">
+  <article class="panel panel-large">
+    <p class="section-label">Authentication</p>
+    <div class="panel-header">
+      <div>
+        <h3>{{ mode() === 'login' ? 'Login to the challenge board' : 'Create a fighter profile' }}</h3>
+        <p class="muted">
+          {{
+            mode() === 'login'
+              ? 'Open your sparring requests, incoming challenges and reviews.'
+              : 'Registration creates a public fighter card with experience, bio and review-based trust score.'
+          }}
+        </p>
+      </div>
+      <div class="hero-meta">
+        <button
+          type="button"
+          class="ghost-button"
+          [class.active]="mode() === 'login'"
+          (click)="setMode('login')"
+        >
+          Login
+        </button>
+        <button
+          type="button"
+          class="ghost-button"
+          [class.active]="mode() === 'register'"
+          (click)="setMode('register')"
+        >
+          Register
+        </button>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="banner error-banner">{{ errorMessage() }}</div>
+    }
+
+    <div class="form-grid">
+      <label class="field">
+        <span>Username</span>
+        <input
+          type="text"
+          [ngModel]="username()"
+          (ngModelChange)="username.set($event)"
+          placeholder="fighter_one"
+        />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input
+          type="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          placeholder="FightTrack123!"
+        />
+      </label>
+
+      @if (mode() === 'register') {
+        <label class="field">
+          <span>Confirm password</span>
+          <input
+            type="password"
+            [ngModel]="confirmPassword()"
+            (ngModelChange)="confirmPassword.set($event)"
+            placeholder="Repeat password"
+          />
+        </label>
+
+        <label class="field">
+          <span>Fighter bio</span>
+          <input
+            type="text"
+            [ngModel]="achievements()"
+            (ngModelChange)="achievements.set($event)"
+            placeholder="Technical boxer, disciplined sparring partner"
+          />
+        </label>
+      }
+    </div>
+
+    @if (mode() === 'register') {
+      <div class="subsection">
+        <div class="subsection-header">
+          <div>
+            <p class="section-label">Experience</p>
+            <p class="muted">Press the plus button and describe your background in each martial art.</p>
+          </div>
+          <button type="button" class="ghost-button plus-button" (click)="addExperience()">+</button>
+        </div>
+
+        @if (!experiences().length) {
+          <div class="empty-state">No experience added yet. Add at least one martial art.</div>
+        } @else {
+          <div class="experience-list">
+            @for (experience of experiences(); track $index) {
+              <div class="experience-row">
+                <label class="field">
+                  <span>Martial art</span>
+                  <select
+                    [ngModel]="experience.martial_art_name"
+                    (ngModelChange)="updateExperience($index, 'martial_art_name', $event)"
+                  >
+                    <option value="">Choose style</option>
+                    @for (martialArt of martialArts; track martialArt) {
+                      <option [value]="martialArt">{{ martialArt }}</option>
+                    }
+                  </select>
+                </label>
+
+                <label class="field small-field">
+                  <span>Years</span>
+                  <input
+                    type="number"
+                    min="0"
+                    [ngModel]="experience.years"
+                    (ngModelChange)="updateExperience($index, 'years', +$event)"
+                  />
+                </label>
+
+                <label class="field small-field">
+                  <span>Months</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max="11"
+                    [ngModel]="experience.months"
+                    (ngModelChange)="updateExperience($index, 'months', +$event)"
+                  />
+                </label>
+
+                <button type="button" class="danger-button compact-button" (click)="removeExperience($index)">
+                  Remove
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (mode() === 'login') {
+      <button type="button" class="primary-button" (click)="login()">
+        {{ isSubmitting() ? 'Signing in...' : 'Login' }}
+      </button>
+    } @else {
+      <button type="button" class="primary-button" (click)="register()">
+        {{ isSubmitting() ? 'Creating profile...' : 'Register fighter' }}
+      </button>
+    }
+  </article>
+
+  <article class="panel accent-panel">
+    <p class="section-label">Demo access</p>
+    <h3>Ready-made backend users</h3>
+    <div class="stats-list">
+      <div>
+        <strong>fighter_one</strong>
+        <span>FightTrack123!</span>
+      </div>
+      <div>
+        <strong>fighter_two</strong>
+        <span>FightTrack123!</span>
+      </div>
+    </div>
+  </article>
+</section>
