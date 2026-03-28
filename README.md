@@ -18,4 +18,3 @@ Relationships:
 - SparringRequest references User as the initiator
 - SparringRequest references User as the opponent
 - SparringRequest references Gym as the location where the sparring will take place
-
