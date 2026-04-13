@@ -15,7 +15,7 @@ export class JwtInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.auth.getAccessToken();
 
-    // Не добавляем токен к запросам логина
+
     if (token && !req.url.includes('/auth/login/')) {
       req = req.clone({
         setHeaders: { Authorization: `Bearer ${token}` },

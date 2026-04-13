@@ -8,48 +8,8 @@ import { AuthService } from './services/auth.service';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
-  template: `
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="topbar-inner">
-          <a class="brand" routerLink="/">
-            <span class="brand-mark">FT</span>
-            <span class="brand-text">FIGHT<span class="accent">TRACK</span></span>
-          </a>
-
-          <nav class="top-nav">
-            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a>
-            <a routerLink="/rating" routerLinkActive="active">Рейтинг</a>
-            @if (auth.hasToken()) {
-              <a routerLink="/fights" routerLinkActive="active">Спарринги</a>
-              <a routerLink="/matchmaking" routerLinkActive="active">Подбор соперника</a>
-              <a routerLink="/profile" routerLinkActive="active">Профиль</a>
-            }
-          </nav>
-
-          <div class="topbar-actions">
-            @if (auth.user$ | async; as user) {
-              <a class="user-chip" routerLink="/profile">
-                <span class="user-chip__avatar">{{ user.username[0].toUpperCase() }}</span>
-                <span class="user-chip__meta">
-                  <strong>{{ user.username }}</strong>
-                  <small>Рейтинг {{ user.rating }}</small>
-                </span>
-              </a>
-              <button class="ghost-btn" (click)="auth.logout()">Выйти</button>
-            } @else {
-              <a class="ghost-btn ghost-btn--link" routerLink="/login">Войти</a>
-              <a class="accent-btn" routerLink="/register">Регистрация</a>
-            }
-          </div>
-        </div>
-      </header>
-
-      <main class="main-content main-content--with-topbar">
-        <router-outlet />
-      </main>
-    </div>
-  `,
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   constructor(public auth: AuthService) {}
