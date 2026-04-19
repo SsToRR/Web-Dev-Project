@@ -1,116 +1,101 @@
+<div class="page-wrap">
+  <div class="page-header">
+    <div>
+      <span class="eyebrow">Leaderboard</span>
+      <h1>Рейтинг бойцов</h1>
+      <p>Лидеры по рейтингу с фильтрами по виду спорта, длительности тренировок и весовой категории.</p>
+    </div>
+  </div>
 
-    <div class="page-wrap">
-      <div class="page-header">
-        <div>
-          <span class="eyebrow">Leaderboard</span>
-          <h1>Рейтинг бойцов</h1>
-          <p>Лидеры по рейтингу с фильтрами по виду спорта, длительности тренировок и весовой категории.</p>
-        </div>
+  <section class="filters-card">
+    <div class="filters-grid">
+      <div class="form-group">
+        <label for="martialArt">Вид спорта</label>
+        <select id="martialArt" [(ngModel)]="filters.martial_art_id" name="martial_art_id">
+          <option [ngValue]="null">Любой</option>
+          @for (art of martialArts; track art.id) {
+            <option [ngValue]="art.id">{{ art.name }}</option>
+          }
+        </select>
       </div>
 
-      <section class="filters-card">
-        <div class="filters-grid">
-          <div class="form-group">
-            <label for="martialArt">Вид спорта</label>
-            <select id="martialArt" [(ngModel)]="filters.martial_art_id" name="martial_art_id">
-              <option [ngValue]="null">Любой</option>
-              @for (art of martialArts; track art.id) {
-                <option [ngValue]="art.id">{{ art.name }}</option>
-              }
-            </select>
-          </div>
+      <div class="form-group">
+        <label for="experience">Уровень</label>
+        <select id="experience" [(ngModel)]="filters.experience_level" name="experience_level">
+          <option [ngValue]="null">Любой</option>
+          <option [ngValue]="1">Новичок</option>
+          <option [ngValue]="2">Любитель</option>
+          <option [ngValue]="3">Средний</option>
+          <option [ngValue]="4">Продвинутый</option>
+          <option [ngValue]="5">Профессионал</option>
+        </select>
+      </div>
 
-          <div class="form-group">
-            <label for="experience">Уровень</label>
-            <select id="experience" [(ngModel)]="filters.experience_level" name="experience_level">
-              <option [ngValue]="null">Любой</option>
-              <option [ngValue]="1">Новичок</option>
-              <option [ngValue]="2">Любитель</option>
-              <option [ngValue]="3">Средний</option>
-              <option [ngValue]="4">Продвинутый</option>
-              <option [ngValue]="5">Профессионал</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="weightCategory">Весовая категория</label>
-            <select id="weightCategory" [(ngModel)]="filters.weight_category" name="weight_category">
-              <option [ngValue]="null">Любая</option>
-              <option value="light">Легкая</option>
-              <option value="middle">Средняя</option>
-              <option value="heavy">Тяжелая</option>
-              <option value="super_heavy">Супертяжелая</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="minDuration">Мин. длительность</label>
-            <input id="minDuration" [(ngModel)]="filters.min_duration" name="min_duration" type="number" min="15" max="300" step="15" />
-          </div>
-
-          <div class="form-group">
-            <label for="maxDuration">Макс. длительность</label>
-            <input id="maxDuration" [(ngModel)]="filters.max_duration" name="max_duration" type="number" min="15" max="300" step="15" />
-          </div>
-        </div>
-
-        <div class="filter-actions">
-          <button class="accent-btn" (click)="loadLeaderboard()" [disabled]="isLoading">Применить</button>
-          <button class="ghost-btn" (click)="resetFilters()" [disabled]="isLoading">Сбросить</button>
-        </div>
-      </section>
-
-      @if (errorMessage) {
-        <div class="alert alert-error">{{ errorMessage }}</div>
-      }
-
-      @if (isLoading) {
-        <div class="loading-state">
-          <div class="loading-spinner"></div>
-          <p>Собираем рейтинг...</p>
-        </div>
-      } @else {
-        <section class="rating-list">
-          @for (fighter of fighters; track fighter.id; let idx = $index) {
-            <article class="rating-card">
-              <div class="rank">{{ idx + 1 }}</div>
-              <div class="avatar">
-                @if (fighter.avatar_url) {
-                  <img [src]="fighter.avatar_url" [alt]="fighter.username" />
-                } @else {
-                  <span>{{ fighter.username[0].toUpperCase() }}</span>
-                }
-              </div>
-
-              <div class="fighter-main">
-                <h2>{{ fighter.username }}</h2>
-                <p>{{ fighter.experience_label }} · {{ fighter.city || 'Без города' }}</p>
-                <div class="meta-tags">
-                  <span>Рейтинг {{ fighter.rating }}</span>
-                  <span>{{ fighter.total_fights }} принятых вызовов</span>
-                  @if (fighter.weight_category_label) {
-                    <span>{{ fighter.weight_category_label }}</span>
-                  }
-                  @if (fighter.height_cm) {
-                    <span>{{ fighter.height_cm }} см</span>
-                  }
-                </div>
-              </div>
-
-              <div class="fighter-side">
-                <strong>{{ fighter.rating }}</strong>
-                <small>rating</small>
-              </div>
-            </article>
-          }
-        </section>
-
-        @if (!fighters.length) {
-          <div class="empty-state">
-            <span class="empty-icon">/</span>
-            <p>По выбранным фильтрам бойцы не найдены.</p>
-          </div>
-        }
-      }
+      <div class="form-group">
+        <label for="weightCategory">Весовая категория</label>
+        <select id="weightCategory" [(ngModel)]="filters.weight_category" name="weight_category">
+          <option [ngValue]="null">Любая</option>
+          <option value="light">Легкая</option>
+          <option value="middle">Средняя</option>
+          <option value="heavy">Тяжелая</option>
+          <option value="super_heavy">Супертяжелая</option>
+        </select>
+      </div>
     </div>
-  
+
+    <div class="filter-actions">
+      <button class="accent-btn" (click)="loadLeaderboard()" [disabled]="isLoading">Применить</button>
+      <button class="ghost-btn" (click)="resetFilters()" [disabled]="isLoading">Сбросить</button>
+    </div>
+  </section>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Собираем рейтинг...</p>
+    </div>
+  } @else {
+    <section class="rating-list">
+      @for (fighter of fighters; track fighter.id; let idx = $index) {
+        <article class="rating-card">
+          <div class="rank">{{ idx + 1 }}</div>
+          <div class="avatar">
+            <span>{{ fighter.username[0].toUpperCase() }}</span>
+          </div>
+
+          <div class="fighter-main">
+            <h2>{{ fighter.username }}</h2>
+            <p>{{ fighter.experience_label }} · {{ fighter.city || 'Без города' }}</p>
+            <div class="meta-tags">
+              <span>Рейтинг {{ fighter.rating }}</span>
+              <span>{{ fighter.total_fights }} принятых вызовов</span>
+              @if (fighter.weight_category_label) {
+                <span>{{ fighter.weight_category_label }}</span>
+              }
+              @if (fighter.height_cm) {
+                <span>{{ fighter.height_cm }} см</span>
+              }
+            </div>
+          </div>
+
+          <div class="fighter-side">
+            <strong>{{ fighter.rating }}</strong>
+            <small>rating</small>
+          </div>
+        </article>
+      }
+    </section>
+
+    @if (!fighters.length) {
+      <div class="empty-state">
+        <span class="empty-icon">/</span>
+        <p>По выбранным фильтрам бойцы не найдены.</p>
+      </div>
+    }
+  }
+</div>
+

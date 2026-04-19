@@ -1,0 +1,259 @@
+<div class="page-wrap">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Мои вызовы и спарринги</h1>
+      <p class="page-subtitle">Входящие вызовы, принятые спарринги и архив завершённых тренировок.</p>
+    </div>
+
+    @if (myProfile) {
+      <div class="stats-bar">
+        <div class="stat">
+          <span class="stat-value accent">{{ myProfile.rating }}</span>
+          <span class="stat-label">Рейтинг</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ myProfile.total_fights }}</span>
+          <span class="stat-label">Принятые вызовы</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ myProfile.weight_category_label || '—' }}</span>
+          <span class="stat-label">Весовая категория</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (notification) {
+    <div class="alert" [class.alert-success]="notification.type === 'success'" [class.alert-error]="notification.type === 'error'">
+      {{ notification.message }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Загружаем список вызовов...</p>
+    </div>
+  } @else {
+    <section class="section-block">
+      <div class="section-head">
+        <h2>Входящие вызовы</h2>
+        <span>{{ incomingChallenges.length }}</span>
+      </div>
+
+      @if (incomingChallenges.length) {
+        <div class="fight-list">
+          @for (fight of incomingChallenges; track fight.id) {
+            <article class="fight-card">
+              <div class="fight-main">
+                <div class="fight-header">
+                  <div>
+                    <strong>{{ fight.initiator_username }}</strong>
+                    <span class="vs-label">вызывает вас</span>
+                  </div>
+                  <span class="status-badge status-badge--pending">{{ fight.challenge_status_label }}</span>
+                </div>
+
+                <div class="fight-meta">
+                  <span>{{ fight.date | date:'dd.MM.yyyy HH:mm' }}</span>
+                  <span>{{ fight.duration_minutes }} мин</span>
+                  @if (fight.martial_art_detail) {
+                    <span>{{ fight.martial_art_detail.name }}</span>
+                  }
+                  @if (fight.location_detail) {
+                    <span>{{ fight.location_detail.name }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="fight-actions">
+                <button class="btn-accept" (click)="respondToChallenge(fight, 'accept')">Принять</button>
+                <button class="btn-decline" (click)="respondToChallenge(fight, 'decline')">Отклонить</button>
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">Нет входящих вызовов.</div>
+      }
+    </section>
+
+    <section class="section-block">
+      <div class="section-head">
+        <h2>Исходящие вызовы</h2>
+        <span>{{ outgoingChallenges.length }}</span>
+      </div>
+
+      @if (outgoingChallenges.length) {
+        <div class="fight-list">
+          @for (fight of outgoingChallenges; track fight.id) {
+            <article class="fight-card">
+              <div class="fight-main">
+                <div class="fight-header">
+                  <div>
+                    <strong>{{ fight.opponent_username }}</strong>
+                    <span class="vs-label">ожидает ответа</span>
+                  </div>
+                  <span class="status-badge status-badge--pending">{{ fight.challenge_status_label }}</span>
+                </div>
+                <div class="fight-meta">
+                  <span>{{ fight.date | date:'dd.MM.yyyy HH:mm' }}</span>
+                  <span>{{ fight.duration_minutes }} мин</span>
+                  @if (fight.martial_art_detail) {
+                    <span>{{ fight.martial_art_detail.name }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="fight-actions">
+                <button class="btn-delete" (click)="deleteFight(fight)">Отменить вызов</button>
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">Нет вызовов, ожидающих ответа.</div>
+      }
+    </section>
+
+    <section class="section-block">
+      <div class="section-head">
+        <h2>Принятые спарринги</h2>
+        <span>{{ acceptedChallenges.length }}</span>
+      </div>
+
+      @if (acceptedChallenges.length) {
+        <div class="fight-list">
+          @for (fight of acceptedChallenges; track fight.id) {
+            <article class="fight-card fight-card--accepted">
+              <div class="fight-main">
+                <div class="fight-header">
+                  <div>
+                    <strong>{{ getOpponentName(fight) }}</strong>
+                    <span class="vs-label">принял вызов</span>
+                  </div>
+                  <span class="status-badge status-badge--accepted">{{ fight.challenge_status_label }}</span>
+                </div>
+
+                <div class="fight-meta">
+                  <span>{{ fight.date | date:'dd.MM.yyyy HH:mm' }}</span>
+                  <span>{{ fight.duration_minutes }} мин</span>
+                  @if (fight.martial_art_detail) {
+                    <span>{{ fight.martial_art_detail.name }}</span>
+                  }
+                  @if (fight.location_detail) {
+                    <span>{{ fight.location_detail.name }}</span>
+                  }
+                </div>
+
+                @if (isFutureFight(fight)) {
+                  <p class="fight-note">Спарринг запланирован. Завершение станет доступно после наступления времени.</p>
+                }
+              </div>
+
+              <div class="fight-actions">
+                @if (canFinish(fight)) {
+                  <button class="btn-review" (click)="openReviewForm(fight)">Завершить спарринг</button>
+                }
+                @if (isInitiator(fight)) {
+                  <button class="btn-delete" (click)="deleteFight(fight)">Удалить</button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">Пока нет принятых спаррингов.</div>
+      }
+    </section>
+
+    <section class="section-block">
+      <div class="section-head">
+        <h2>Архив</h2>
+        <span>{{ archivedFights.length }}</span>
+      </div>
+
+      @if (archivedFights.length) {
+        <div class="fight-list">
+          @for (fight of archivedFights; track fight.id) {
+            <article class="fight-card" [class.fight-card--finished]="fight.is_finished">
+              <div class="fight-main">
+                <div class="fight-header">
+                  <div>
+                    <strong>{{ getOpponentName(fight) }}</strong>
+                    <span class="vs-label">
+                      {{ fight.is_finished ? 'спарринг завершён' : 'вызов завершён без подтверждения' }}
+                    </span>
+                  </div>
+                  <span class="status-badge" [class.status-badge--declined]="fight.challenge_status === 'declined'" [class.status-badge--finished]="fight.is_finished">
+                    {{ fight.is_finished ? 'Завершён' : fight.challenge_status_label }}
+                  </span>
+                </div>
+
+                <div class="fight-meta">
+                  <span>{{ fight.date | date:'dd.MM.yyyy HH:mm' }}</span>
+                  <span>{{ fight.duration_minutes }} мин</span>
+                  @if (fight.martial_art_detail) {
+                    <span>{{ fight.martial_art_detail.name }}</span>
+                  }
+                </div>
+
+                @if (fight.opponent_review) {
+                  <div class="review-block">
+                    <span class="review-label">Отзыв</span>
+                    <p class="review-text">{{ fight.opponent_review }}</p>
+                    @if (fight.opponent_skill_rating) {
+                      <div class="skill-stars">{{ getStars(fight.opponent_skill_rating) }} · {{ fight.opponent_skill_rating }}/10</div>
+                    }
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">Архив пока пуст.</div>
+      }
+    </section>
+  }
+
+  @if (reviewForm.fightId !== null) {
+    <div class="modal-overlay" (click)="closeReviewForm()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h2>Завершение спарринга</h2>
+
+        <div class="form-group">
+          <label>Отзыв об оппоненте</label>
+          <textarea
+            [(ngModel)]="reviewForm.opponentReview"
+            name="reviewText"
+            rows="4"
+            placeholder="Что можете сказать о сопернике, технике и спарринге?"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Оценка навыков: {{ reviewForm.skillRating }}/10</label>
+          <input type="range" min="1" max="10" [(ngModel)]="reviewForm.skillRating" name="skillRating" />
+          <div class="rating-stars">{{ getStars(reviewForm.skillRating) }}</div>
+        </div>
+
+        @if (reviewError) {
+          <div class="alert alert-error">{{ reviewError }}</div>
+        }
+
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="submitReview()" [disabled]="isSaving">
+            @if (isSaving) {
+              <span class="spinner"></span> Сохраняем...
+            } @else {
+              Сохранить
+            }
+          </button>
+          <button class="btn-ghost" (click)="closeReviewForm()">Отмена</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

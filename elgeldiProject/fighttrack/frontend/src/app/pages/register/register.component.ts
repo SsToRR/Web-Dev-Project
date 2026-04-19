@@ -23,7 +23,6 @@ export class RegisterComponent {
     weight_kg: null as number | null,
     height_cm: null as number | null,
     city: '',
-    avatar_url: '',
   };
 
   isLoading = false;

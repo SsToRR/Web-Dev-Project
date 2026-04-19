@@ -1,0 +1,179 @@
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Подбор соперника</h1>
+    <p class="page-subtitle">Найдите бойца по весовой категории, рейтингу и опыту, затем отправьте вызов.</p>
+  </div>
+
+  <div class="filter-card">
+    <h2 class="section-title">Параметры поиска</h2>
+    <div class="filter-grid">
+      <div class="form-group">
+        <label>Вид спорта</label>
+        <select [(ngModel)]="filters.martial_art_id" name="martial_art">
+          <option [ngValue]="null">Любой</option>
+          @for (art of martialArts; track art.id) {
+            <option [ngValue]="art.id">{{ art.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Локация</label>
+        <select [(ngModel)]="filters.location_id" name="location">
+          <option [ngValue]="null">Любая</option>
+          @for (loc of locations; track loc.id) {
+            <option [ngValue]="loc.id">{{ loc.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Уровень</label>
+        <select [(ngModel)]="filters.experience_level" name="experience_level">
+          <option [ngValue]="null">Любой</option>
+          <option [ngValue]="1">Новичок</option>
+          <option [ngValue]="2">Любитель</option>
+          <option [ngValue]="3">Средний</option>
+          <option [ngValue]="4">Продвинутый</option>
+          <option [ngValue]="5">Профессионал</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Весовая категория</label>
+        <select [(ngModel)]="filters.weight_category" name="weight_category">
+          <option [ngValue]="null">Любая</option>
+          <option value="light">Легкая</option>
+          <option value="middle">Средняя</option>
+          <option value="heavy">Тяжелая</option>
+          <option value="super_heavy">Супертяжелая</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Разброс рейтинга (±{{ filters.rating_range }})</label>
+        <input type="range" min="50" max="500" step="50" [(ngModel)]="filters.rating_range" name="rating_range" />
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn-primary" (click)="applyFilters()" [disabled]="isSearching">
+        @if (isSearching) {
+          <span class="spinner"></span> Ищем...
+        } @else {
+          Применить фильтры
+        }
+      </button>
+      <button class="btn-secondary" (click)="autoMatch()" [disabled]="isSearching">Автоподбор</button>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+  @if (opponents.length > 0) {
+    <div class="results-header">
+      <h2 class="section-title">Найдено соперников: {{ totalFound }}</h2>
+    </div>
+
+    <div class="opponents-grid">
+      @for (fighter of opponents; track fighter.id) {
+        <article class="fighter-card">
+          <div class="fighter-avatar">
+            <span>{{ fighter.username[0].toUpperCase() }}</span>
+          </div>
+
+          <div class="fighter-info">
+            <h3 class="fighter-name">{{ fighter.username }}</h3>
+            <div class="fighter-meta">
+              <span class="badge badge-rating">Рейтинг {{ fighter.rating }}</span>
+              <span class="badge badge-exp">{{ fighter.experience_label }}</span>
+              @if (fighter.weight_category_label) {
+                <span class="badge badge-weight">{{ fighter.weight_category_label }}</span>
+              }
+            </div>
+            <div class="fighter-stats">
+              @if (fighter.weight_kg) {
+                <span>{{ fighter.weight_kg }} кг</span>
+              }
+              @if (fighter.height_cm) {
+                <span>{{ fighter.height_cm }} см</span>
+              }
+              @if (fighter.city) {
+                <span>{{ fighter.city }}</span>
+              }
+            </div>
+            @if (fighter.achievements) {
+              <p class="fighter-achievements">{{ fighter.achievements }}</p>
+            }
+          </div>
+
+          <button class="btn-challenge" (click)="challengeFighter(fighter)">Бросить вызов</button>
+        </article>
+      }
+    </div>
+  }
+
+  @if (searched && opponents.length === 0 && !errorMessage) {
+    <div class="empty-state">
+      <span class="empty-icon">/</span>
+      <p>Соперники не найдены. Попробуйте ослабить фильтры.</p>
+    </div>
+  }
+
+  @if (challengeTarget) {
+    <div class="modal-overlay" (click)="closeChallenge()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h2>Вызов на спарринг</h2>
+        <p class="modal-subtitle">Соперник: <strong>{{ challengeTarget.username }}</strong></p>
+
+        <div class="form-group">
+          <label>Вид спорта</label>
+          <select [(ngModel)]="challengeForm.martial_art_rule" name="challenge_martial_art">
+            <option [ngValue]="null">Выберите</option>
+            @for (art of martialArts; track art.id) {
+              <option [ngValue]="art.id">{{ art.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Локация</label>
+          <select [(ngModel)]="challengeForm.location" name="challenge_location">
+            <option [ngValue]="null">Выберите</option>
+            @for (loc of locations; track loc.id) {
+              <option [ngValue]="loc.id">{{ loc.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Дата и время</label>
+          <input type="datetime-local" [(ngModel)]="challengeForm.date" name="challenge_date" />
+        </div>
+
+        <div class="form-group">
+          <label>Длительность тренировки, мин</label>
+          <input type="number" min="15" max="300" step="15" [(ngModel)]="challengeForm.duration_minutes" name="challenge_duration" />
+        </div>
+
+        @if (challengeError) {
+          <div class="alert alert-error">{{ challengeError }}</div>
+        }
+
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="sendChallenge()" [disabled]="isSending">
+            @if (isSending) {
+              <span class="spinner"></span> Отправляем...
+            } @else {
+              Отправить вызов
+            }
+          </button>
+          <button class="btn-ghost" (click)="closeChallenge()">Отмена</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

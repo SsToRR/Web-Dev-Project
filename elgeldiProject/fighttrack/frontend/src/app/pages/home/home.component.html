@@ -1,97 +1,22 @@
+<div class="home-page">
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">FightTrack</span>
+      <h1>Платформа для спаррингов</h1>
+      <p>
+        Пархай как бабочка, жаль как пчела! Находите подходящих соперников для тренировок, отслеживайте рейтинг и прогресс, и поднимайте свой уровень в любимом боевом искусстве.
+      </p>
 
-    <div class="home-page">
-      <section class="hero">
-        <div class="hero-copy">
-          <span class="eyebrow">FightTrack</span>
-          <h1>Вызовы, подтверждения, рейтинг и история спаррингов в одном месте.</h1>
-          <p>
-            Боец сначала отправляет вызов, соперник принимает или отклоняет его,
-            после тренировки результат попадает в историю и влияет на рейтинг.
-          </p>
-
-          <div class="hero-actions">
-            @if (auth.hasToken()) {
-              <a class="accent-btn" routerLink="/matchmaking">Найти соперника</a>
-              <a class="ghost-btn ghost-btn--link" routerLink="/fights">Мои вызовы</a>
-            } @else {
-              <a class="accent-btn" routerLink="/register">Зарегистрировать бойца</a>
-              <a class="ghost-btn ghost-btn--link" routerLink="/login">Войти</a>
-            }
-          </div>
-        </div>
-
-        <div class="hero-panel">
-          <div class="metric-card">
-            <strong>{{ leaders.length }}</strong>
-            <span>Лидеров в витрине</span>
-          </div>
-          <div class="metric-card">
-            <strong>4</strong>
-            <span>Весовые категории</span>
-          </div>
-          <div class="metric-card">
-            <strong>100%</strong>
-            <span>Контроль статуса вызова</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="feature-grid">
-        <article class="feature-card">
-          <span class="feature-index">01</span>
-          <h2>Вызов с подтверждением</h2>
-          <p>Спарринг не начинается автоматически: сперва отправка, затем ответ соперника.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-index">02</span>
-          <h2>Фильтры по весу и уровню</h2>
-          <p>Матчмейкинг учитывает весовую категорию, рейтинг, город и опыт бойца.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-index">03</span>
-          <h2>Рейтинг лидеров</h2>
-          <p>Отдельная страница показывает сильнейших по рейтингу с фильтрами по типу и длительности.</p>
-        </article>
-      </section>
-
-      <section class="leaders-section">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">Топ бойцов</span>
-            <h2>Лидеры текущего рейтинга</h2>
-          </div>
-          <a class="ghost-btn ghost-btn--link" routerLink="/rating">Открыть весь рейтинг</a>
-        </div>
-
-        @if (isLoading) {
-          <div class="loading-state">
-            <div class="loading-spinner"></div>
-            <p>Загружаем лидеров...</p>
-          </div>
+      <div class="hero-actions">
+        @if (auth.hasToken()) {
+          <a class="accent-btn" routerLink="/matchmaking">Найти соперника</a>
+          <a class="ghost-btn ghost-btn--link" routerLink="/fights">Мои вызовы</a>
         } @else {
-          <div class="leaders-grid">
-            @for (fighter of leaders; track fighter.id; let idx = $index) {
-              <article class="leader-card">
-                <div class="leader-rank">#{{ idx + 1 }}</div>
-                <div class="leader-avatar">
-                  @if (fighter.avatar_url) {
-                    <img [src]="fighter.avatar_url" [alt]="fighter.username" />
-                  } @else {
-                    <span>{{ fighter.username[0].toUpperCase() }}</span>
-                  }
-                </div>
-                <h3>{{ fighter.username }}</h3>
-                <p>{{ fighter.experience_label }} · {{ fighter.city || 'Город не указан' }}</p>
-                <div class="leader-tags">
-                  <span>Рейтинг {{ fighter.rating }}</span>
-                  @if (fighter.weight_category_label) {
-                    <span>{{ fighter.weight_category_label }}</span>
-                  }
-                </div>
-              </article>
-            }
-          </div>
+          <a class="accent-btn" routerLink="/register">Зарегистрировать бойца</a>
+          <a class="ghost-btn ghost-btn--link" routerLink="/login">Войти</a>
         }
-      </section>
+      </div>
     </div>
-  
+  </section>
+</div>
+

@@ -26,7 +26,6 @@ export class ProfileComponent implements OnInit {
     height_cm: null,
     experience_level: 1,
     achievements: '',
-    avatar_url: '',
   };
 
   constructor(private api: ApiService, private auth: AuthService) {}
@@ -44,7 +43,6 @@ export class ProfileComponent implements OnInit {
           height_cm: profile.height_cm,
           experience_level: profile.experience_level,
           achievements: profile.achievements,
-          avatar_url: profile.avatar_url,
         };
         this.isLoading = false;
       },
