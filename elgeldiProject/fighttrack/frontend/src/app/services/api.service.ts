@@ -8,6 +8,15 @@ export interface AuthResponse {
   user: FighterProfile;
 }
 
+export interface AiCoachMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AiCoachResponse {
+  reply: string;
+}
+
 export interface FighterProfile {
   id: number;
   user_id: number;
@@ -131,6 +140,10 @@ export class ApiService {
 
   login(username: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.base}/auth/login/`, { username, password });
+  }
+
+  askAiCoach(message: string, history: AiCoachMessage[]): Observable<AiCoachResponse> {
+    return this.http.post<AiCoachResponse>(`${this.base}/ai-coach/chat/`, { message, history });
   }
 
   logout(refresh: string): Observable<any> {

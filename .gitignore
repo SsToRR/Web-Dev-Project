@@ -1,2 +1,4 @@
-venv/
-elgeldiProject/fighttrack/backend/
+elgeldiProject/fighttrack/backend/venv
+elgeldiProject/fighttrack/backend/.venv
+elgeldiProject/fighttrack/backend/.env
+elgeldiProject/fighttrack/backend/.env.example

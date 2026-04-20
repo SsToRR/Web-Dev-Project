@@ -1,4 +1,3 @@
-// src/app/interceptors/jwt.interceptor.ts
 import { Injectable } from '@angular/core';
 import {
   HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse
@@ -14,9 +13,12 @@ export class JwtInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.auth.getAccessToken();
+    const isAuthEndpoint =
+      req.url.includes('/auth/login/') ||
+      req.url.includes('/auth/register/') ||
+      req.url.includes('/auth/refresh/');
 
-
-    if (token && !req.url.includes('/auth/login/')) {
+    if (token && !isAuthEndpoint) {
       req = req.clone({
         setHeaders: { Authorization: `Bearer ${token}` },
       });
@@ -24,7 +26,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 401) {
+        if (err.status === 401 && !isAuthEndpoint) {
           this.auth.logout();
         }
         return throwError(() => err);
