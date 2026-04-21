@@ -1,8 +1,6 @@
 // src/app/interceptors/jwt.interceptor.ts
 import { Injectable } from '@angular/core';
-import {
-  HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse
-} from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
@@ -14,9 +12,13 @@ export class JwtInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.auth.getAccessToken();
+    const isAuthEndpoint =
+      req.url.includes('/auth/login/') ||
+      req.url.includes('/auth/register/') ||
+      req.url.includes('/auth/refresh/');
 
     // Не добавляем токен к запросам логина
-    if (token && !req.url.includes('/auth/login/')) {
+    if (token && !isAuthEndpoint) {
       req = req.clone({
         setHeaders: { Authorization: `Bearer ${token}` },
       });
@@ -24,7 +26,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 401) {
+        if (err.status === 401 && !isAuthEndpoint) {
           this.auth.logout();
         }
         return throwError(() => err);

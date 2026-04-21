@@ -1,0 +1,79 @@
+<div class="login-page">
+  <div class="login-bg">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-mark">FT</div>
+      <h1>FIGHT<span class="accent">TRACK</span></h1>
+      <p>Платформа для бойцов, спаррингов и истории боёв</p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="alert alert-error">
+        <span class="alert-icon">!</span>
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="alert alert-success">
+        <span class="alert-icon">OK</span>
+        {{ successMessage }}
+      </div>
+    }
+
+    <form class="login-form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Логин</label>
+        <div class="input-wrapper">
+          <span class="input-icon">ID</span>
+          <input
+            id="username"
+            type="text"
+            [(ngModel)]="username"
+            name="username"
+            placeholder="Введите логин"
+            required
+            autocomplete="username"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <div class="input-wrapper">
+          <span class="input-icon">PW</span>
+          <input
+            id="password"
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Введите пароль"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="isLoading">
+        @if (isLoading) {
+          <span class="spinner"></span> Входим...
+        } @else {
+          Войти в систему
+        }
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p class="login-switch">
+        Нет аккаунта?
+        <a routerLink="/register">Зарегистрировать бойца</a>
+      </p>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,28 @@
+# Environment files with real secrets
+.env
+.env.*
+!.env.example
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+db.sqlite3
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Archives and local dumps
+*.zip
+*.7z
+*.rar

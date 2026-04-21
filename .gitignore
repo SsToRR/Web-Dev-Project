@@ -1,1 +1,60 @@
+# Python virtual environments
 venv/
+.venv/
+env/
+ENV/
+
+# Python cache and build output
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Django local runtime files
+db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+media/
+staticfiles/
+
+# Environment files with secrets
+.env
+.env.*
+!.env.example
+
+# Node / Angular dependencies and build output
+node_modules/
+*/node_modules/
+.angular/
+*/.angular/
+frontend/dist/
+*/frontend/dist/
+coverage/
+out-tsc/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE and OS files
+.idea/
+.vscode/
+*.suo
+*.user
+*.sln.docstates
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local archives and temporary files
+*.zip
+*.7z
+*.rar
+*.log
+*.tmp

@@ -1,0 +1,22 @@
+<div class="home-page">
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">FightTrack</span>
+      <h1>Платформа для спаррингов</h1>
+      <p>
+        Пархай как бабочка, жаль как пчела! Находите подходящих соперников для тренировок, отслеживайте рейтинг и прогресс, и поднимайте свой уровень в любимом боевом искусстве.
+      </p>
+
+      <div class="hero-actions">
+        @if (auth.hasToken()) {
+          <a class="accent-btn" routerLink="/matchmaking">Найти соперника</a>
+          <a class="ghost-btn ghost-btn--link" routerLink="/fights">Мои вызовы</a>
+        } @else {
+          <a class="accent-btn" routerLink="/register">Зарегистрировать бойца</a>
+          <a class="ghost-btn ghost-btn--link" routerLink="/login">Войти</a>
+        }
+      </div>
+    </div>
+  </section>
+</div>
+

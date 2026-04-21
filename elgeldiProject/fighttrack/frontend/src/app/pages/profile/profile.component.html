@@ -1,0 +1,132 @@
+<div class="page-wrap">
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Загружаем профиль бойца...</p>
+    </div>
+  } @else if (profile) {
+    <div class="page-header">
+      <div class="hero-card">
+        <div class="hero-avatar">
+          <span>{{ profile.username[0].toUpperCase() }}</span>
+        </div>
+
+        <div class="hero-copy">
+          <span class="eyebrow">Личный кабинет</span>
+          <h1>{{ profile.username }}</h1>
+          <p>{{ profile.city || 'Город не указан' }} · {{ profile.experience_label }}</p>
+          <div class="hero-badges">
+            <span>Рейтинг {{ profile.rating }}</span>
+            <span>{{ profile.total_fights }} спаррингов</span>
+            @if (profile.weight_category_label) {
+              <span>{{ profile.weight_category_label }}</span>
+            }
+            @if (profile.height_cm) {
+              <span>{{ profile.height_cm }} см</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <strong>{{ profile.rating }}</strong>
+          <span>Текущий рейтинг</span>
+        </div>
+        <div class="stat-card">
+          <strong>{{ profile.total_fights }}</strong>
+          <span>Принятые вызовы</span>
+        </div>
+        <div class="stat-card">
+          <strong>{{ profile.weight_kg || '—' }}</strong>
+          <span>Вес, кг</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Основные данные</h2>
+            <p>Заполненный профиль улучшает подбор соперников и рейтинг-лист.</p>
+          </div>
+        </div>
+
+        @if (notification) {
+          <div class="alert" [class.alert-success]="notification.type === 'success'" [class.alert-error]="notification.type === 'error'">
+            {{ notification.message }}
+          </div>
+        }
+
+        <form class="profile-form" (ngSubmit)="saveProfile()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="username">Логин</label>
+              <input id="username" [(ngModel)]="form.username" name="username" type="text" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input id="email" [(ngModel)]="form.email" name="email" type="email" />
+            </div>
+
+            <div class="form-group">
+              <label for="city">Город</label>
+              <input id="city" [(ngModel)]="form.city" name="city" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label for="weight">Вес, кг</label>
+              <input id="weight" [(ngModel)]="form.weight_kg" name="weight_kg" type="number" min="30" step="0.1" />
+            </div>
+
+            <div class="form-group">
+              <label for="height">Рост, см</label>
+              <input id="height" [(ngModel)]="form.height_cm" name="height_cm" type="number" min="120" max="250" />
+            </div>
+
+            <div class="form-group">
+              <label for="experience">Уровень подготовки</label>
+              <select id="experience" [(ngModel)]="form.experience_level" name="experience_level">
+                <option [ngValue]="1">Новичок</option>
+                <option [ngValue]="2">Любитель</option>
+                <option [ngValue]="3">Средний</option>
+                <option [ngValue]="4">Продвинутый</option>
+                <option [ngValue]="5">Профессионал</option>
+              </select>
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="achievements">Достижения</label>
+              <textarea id="achievements" [(ngModel)]="form.achievements" name="achievements" rows="5"></textarea>
+            </div>
+          </div>
+
+          <button class="btn-primary" type="submit" [disabled]="isSaving">
+            @if (isSaving) {
+              <span class="spinner"></span> Сохраняем...
+            } @else {
+              Сохранить профиль
+            }
+          </button>
+        </form>
+      </section>
+
+      <aside class="panel panel--side">
+        <h2>Ключевые параметры</h2>
+        <ul class="tips-list">
+          <li>Рост и вес влияют на весовую категорию в матчмейкинге.</li>
+          <li>Достижения и опыт помогают точнее показывать вас в рейтинге.</li>
+          <li>Актуальный профиль повышает шанс получить принятый вызов.</li>
+        </ul>
+
+        <div class="quote-card">
+          <span class="quote-label">Категория</span>
+          <p>{{ profile.weight_category_label || 'Недостаточно данных для расчета весовой категории.' }}</p>
+        </div>
+      </aside>
+    </div>
+  }
+</div>
+

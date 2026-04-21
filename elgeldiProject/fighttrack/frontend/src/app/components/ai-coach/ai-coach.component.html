@@ -1,0 +1,56 @@
+<div class="ai-coach">
+  <button
+    class="ai-coach__launcher"
+    type="button"
+    title="AI Coach"
+    aria-label="Open AI Coach"
+    [class.ai-coach__launcher--active]="isOpen"
+    (click)="toggleChat()"
+  >
+    <span class="ai-coach__spark">AI</span>
+    <span class="ai-coach__label">Coach</span>
+  </button>
+
+  @if (isOpen) {
+    <section class="ai-coach__panel" aria-label="AI Coach chat">
+      <header class="ai-coach__header">
+        <div>
+          <h2>AI Coach</h2>
+          <p>Safe training guidance for technique, routine, recovery, and mindset.</p>
+        </div>
+        <button class="ai-coach__close" type="button" aria-label="Close AI Coach" (click)="closeChat()">x</button>
+      </header>
+
+      <div class="ai-coach__messages">
+        @for (message of messages; track $index) {
+          <article
+            class="ai-coach__message"
+            [class.ai-coach__message--user]="message.role === 'user'"
+            [class.ai-coach__message--error]="message.status === 'error'"
+          >
+            <span>{{ message.content }}</span>
+          </article>
+        }
+
+        @if (isLoading) {
+          <article class="ai-coach__message ai-coach__message--loading">
+            <span>Coach is thinking...</span>
+          </article>
+        }
+      </div>
+
+      <form class="ai-coach__form" (ngSubmit)="sendMessage()">
+        <input
+          name="aiCoachQuestion"
+          type="text"
+          maxlength="1200"
+          placeholder="Ask about training..."
+          autocomplete="off"
+          [(ngModel)]="question"
+          [disabled]="isLoading"
+        />
+        <button type="submit" [disabled]="isLoading || !question.trim()">Send</button>
+      </form>
+    </section>
+  }
+</div>

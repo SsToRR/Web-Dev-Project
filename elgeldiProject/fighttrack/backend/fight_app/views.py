@@ -1,3 +1,9 @@
+import json
+import os
+import re
+from urllib import error as urllib_error
+from urllib import request as urllib_request
+
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -21,6 +27,51 @@ from .serializers import (
     MatchmakingFilterSerializer,
     RegisterSerializer,
 )
+
+
+AI_COACH_SYSTEM_PROMPT = (
+    "You are AI Coach for FIGHTTRACK, a helpful and safety-focused combat sports assistant. "
+    "Give concise, practical, beginner-friendly answers about training, technique, routine, "
+    "discipline, recovery, and mindset. Do not provide medical diagnosis, dangerous instructions, "
+    "extreme weight-cutting advice, or risky sparring recommendations. Prioritize safety, clarity, "
+    "and responsible guidance. Reply in plain text only. Do not use Markdown, HTML tags, headings, "
+    "tables, code fences, bold text, or links formatted with brackets."
+)
+
+OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
+
+
+def extract_openai_response_text(response_payload):
+    direct_text = response_payload.get("output_text")
+    if isinstance(direct_text, str) and direct_text.strip():
+        return direct_text.strip()
+
+    chunks = []
+    for output_item in response_payload.get("output", []):
+        if not isinstance(output_item, dict):
+            continue
+
+        for content_item in output_item.get("content", []):
+            if not isinstance(content_item, dict):
+                continue
+
+            text = content_item.get("text")
+            if isinstance(text, str) and text.strip():
+                chunks.append(text.strip())
+
+    return "\n\n".join(chunks)
+
+
+def normalize_ai_coach_reply(text):
+    text = re.sub(r"<[^>\n]+>", "", text)
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    text = text.replace("```", "").replace("`", "")
+    text = re.sub(r"(?m)^\s{0,3}#{1,6}\s*", "", text)
+    text = re.sub(r"(?m)^\s*[-*+]\s+", "", text)
+    text = re.sub(r"(?m)^\s*>\s?", "", text)
+    text = re.sub(r"[*_~]{1,3}", "", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
 
 
 def apply_weight_category_filter(queryset, weight_category):
@@ -340,6 +391,85 @@ def register_view(request):
         {"access": str(refresh.access_token), "refresh": str(refresh), "user": profile_data},
         status=status.HTTP_201_CREATED,
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def ai_coach_chat(request):
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        return Response(
+            {"detail": "AI Coach is not configured. Set OPENAI_API_KEY on the backend."},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    message = request.data.get("message")
+    history = request.data.get("history", [])
+
+    if not isinstance(message, str) or not message.strip():
+        return Response({"message": "Message is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    message = message.strip()
+    if len(message) > 1200:
+        return Response({"message": "Message is too long. Keep it under 1200 characters."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not isinstance(history, list):
+        return Response({"history": "History must be a list."}, status=status.HTTP_400_BAD_REQUEST)
+
+    input_messages = []
+    for item in history[-8:]:
+        if not isinstance(item, dict):
+            continue
+        role = item.get("role")
+        content = item.get("content")
+        if role not in {"user", "assistant"} or not isinstance(content, str) or not content.strip():
+            continue
+        input_messages.append({"role": role, "content": content.strip()[:1200]})
+
+    input_messages.append({"role": "user", "content": message})
+
+    payload = {
+        "model": os.environ.get("OPENAI_MODEL", "gpt-4.1-mini"),
+        "instructions": AI_COACH_SYSTEM_PROMPT,
+        "input": input_messages,
+        "max_output_tokens": 450,
+    }
+
+    openai_request = urllib_request.Request(
+        OPENAI_RESPONSES_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib_request.urlopen(openai_request, timeout=30) as response:
+            response_payload = json.loads(response.read().decode("utf-8"))
+    except urllib_error.HTTPError as exc:
+        detail = "AI Coach could not answer right now."
+        try:
+            error_payload = json.loads(exc.read().decode("utf-8"))
+            detail = error_payload.get("error", {}).get("message", detail)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            pass
+        return Response({"detail": detail}, status=status.HTTP_502_BAD_GATEWAY)
+    except (urllib_error.URLError, TimeoutError, json.JSONDecodeError):
+        return Response(
+            {"detail": "AI Coach service is temporarily unavailable."},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    answer = extract_openai_response_text(response_payload)
+    if not answer:
+        return Response(
+            {"detail": "AI Coach returned an empty response."},
+            status=status.HTTP_502_BAD_GATEWAY,
+        )
+
+    return Response({"reply": normalize_ai_coach_reply(answer)})
 
 
 @api_view(["POST"])

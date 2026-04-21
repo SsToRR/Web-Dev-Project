@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 WEIGHT_CATEGORY_RULES = [
-    ("light", "Легкая", 0, 60),
+    ("light", "Легкая", 30, 60),
     ("middle", "Средняя", 60, 75),
     ("heavy", "Тяжелая", 75, 91),
     ("super_heavy", "Супертяжелая", 91, None),
@@ -78,11 +78,12 @@ class FighterProfile(models.Model):
         verbose_name="Рост (см)",
     )
     city = models.CharField(max_length=100, blank=True, verbose_name="Город")
-    avatar_url = models.URLField(blank=True, verbose_name="Аватар")
 
     class Meta:
         verbose_name = "Профиль бойца"
         verbose_name_plural = "Профили бойцов"
+
+    avatar_url = models.URLField(blank=True, verbose_name="\u0410\u0432\u0430\u0442\u0430\u0440")
 
     @property
     def weight_category_code(self):

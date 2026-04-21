@@ -1,0 +1,730 @@
+{
+  "info": {
+    "_postman_id": "f2c2b8d6-6a3f-4c58-9fb4-5f1a20262026",
+    "name": "FightTrack API",
+    "description": "Postman collection for the FightTrack Angular + Django REST Framework course project. Run Login first to populate access_token and refresh_token variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "fight_id",
+      "value": "1"
+    },
+    {
+      "key": "opponent_id",
+      "value": "2"
+    },
+    {
+      "key": "location_id",
+      "value": "1"
+    },
+    {
+      "key": "martial_art_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register fighter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const data = pm.response.json();",
+                  "  pm.collectionVariables.set('access_token', data.access);",
+                  "  pm.collectionVariables.set('refresh_token', data.refresh);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"demo_fighter\",\n  \"email\": \"demo@example.com\",\n  \"password\": \"pass1234\",\n  \"password_confirm\": \"pass1234\",\n  \"experience_level\": 2,\n  \"achievements\": \"Local tournament participant\",\n  \"weight_kg\": 72.5,\n  \"height_cm\": 178,\n  \"city\": \"Almaty\",\n  \"avatar_url\": \"\"\n}"
+            },
+            "url": "{{base_url}}/auth/register/"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": 6,\n    \"user_id\": 6,\n    \"username\": \"demo_fighter\",\n    \"email\": \"demo@example.com\",\n    \"rating\": 1000,\n    \"experience_level\": 2,\n    \"experience_label\": \"Amateur\",\n    \"achievements\": \"Local tournament participant\",\n    \"weight_kg\": 72.5,\n    \"height_cm\": 178,\n    \"weight_category\": \"middle\",\n    \"weight_category_label\": \"Middle\",\n    \"city\": \"Almaty\",\n    \"avatar_url\": \"\",\n    \"total_fights\": 0\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json();",
+                  "  pm.collectionVariables.set('access_token', data.access);",
+                  "  pm.collectionVariables.set('refresh_token', data.refresh);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"ali_kg\",\n  \"password\": \"pass1234\"\n}"
+            },
+            "url": "{{base_url}}/auth/login/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": 2,\n    \"user_id\": 2,\n    \"username\": \"ali_kg\",\n    \"email\": \"ali@example.com\",\n    \"rating\": 1250,\n    \"experience_level\": 3,\n    \"experience_label\": \"Intermediate\",\n    \"achievements\": \"Regional boxing participant\",\n    \"weight_kg\": 70,\n    \"height_cm\": 175,\n    \"weight_category\": \"middle\",\n    \"weight_category_label\": \"Middle\",\n    \"city\": \"Almaty\",\n    \"avatar_url\": \"\",\n    \"total_fights\": 2\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json();",
+                  "  if (data.access) pm.collectionVariables.set('access_token', data.access);",
+                  "  if (data.refresh) pm.collectionVariables.set('refresh_token', data.refresh);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/refresh/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"access\": \"new-access-token\",\n  \"refresh\": \"new-refresh-token\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/logout/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": \"Logout completed successfully.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get my profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/profile/me/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 2,\n  \"user_id\": 2,\n  \"username\": \"ali_kg\",\n  \"email\": \"ali@example.com\",\n  \"rating\": 1250,\n  \"experience_level\": 3,\n  \"experience_label\": \"Intermediate\",\n  \"achievements\": \"Regional boxing participant\",\n  \"weight_kg\": 70,\n  \"height_cm\": 175,\n  \"weight_category\": \"middle\",\n  \"weight_category_label\": \"Middle\",\n  \"city\": \"Almaty\",\n  \"avatar_url\": \"\",\n  \"total_fights\": 2\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update my profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"city\": \"Almaty\",\n  \"weight_kg\": 71,\n  \"height_cm\": 176,\n  \"achievements\": \"Updated profile from Postman\"\n}"
+            },
+            "url": "{{base_url}}/profile/me/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 2,\n  \"user_id\": 2,\n  \"username\": \"ali_kg\",\n  \"email\": \"ali@example.com\",\n  \"rating\": 1250,\n  \"experience_level\": 3,\n  \"experience_label\": \"Intermediate\",\n  \"achievements\": \"Updated profile from Postman\",\n  \"weight_kg\": 71,\n  \"height_cm\": 176,\n  \"weight_category\": \"middle\",\n  \"weight_category_label\": \"Middle\",\n  \"city\": \"Almaty\",\n  \"avatar_url\": \"\",\n  \"total_fights\": 2\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reference Data",
+      "item": [
+        {
+          "name": "List locations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/locations/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Fight Club Almaty\",\n    \"address\": \"Almaty, Abay Avenue 10\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Combat Gym\",\n    \"address\": \"Almaty, Dostyk Avenue 25\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "List martial arts",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/martial-arts/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Boxing\",\n    \"number_of_rounds\": 3,\n    \"round_duration_minutes\": 3\n  },\n  {\n    \"id\": 2,\n    \"name\": \"MMA\",\n    \"number_of_rounds\": 3,\n    \"round_duration_minutes\": 5\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leaderboard",
+      "item": [
+        {
+          "name": "Get leaderboard",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/leaderboard/?limit=10&experience_level=3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leaderboard",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "experience_level",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 2,\n  \"results\": [\n    {\n      \"id\": 2,\n      \"user_id\": 2,\n      \"username\": \"ali_kg\",\n      \"email\": \"ali@example.com\",\n      \"rating\": 1250,\n      \"experience_level\": 3,\n      \"experience_label\": \"Intermediate\",\n      \"achievements\": \"Regional boxing participant\",\n      \"weight_kg\": 70,\n      \"height_cm\": 175,\n      \"weight_category\": \"middle\",\n      \"weight_category_label\": \"Middle\",\n      \"city\": \"Almaty\",\n      \"avatar_url\": \"\",\n      \"total_fights\": 2\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Matchmaking",
+      "item": [
+        {
+          "name": "Find opponents with filters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"martial_art_id\": {{martial_art_id}},\n  \"location_id\": {{location_id}},\n  \"experience_level\": 3,\n  \"weight_category\": \"middle\",\n  \"rating_range\": 300,\n  \"auto\": false\n}"
+            },
+            "url": "{{base_url}}/matchmaking/find/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 1,\n  \"results\": [\n    {\n      \"id\": 3,\n      \"user_id\": 3,\n      \"username\": \"arman_mma\",\n      \"email\": \"arman@example.com\",\n      \"rating\": 1100,\n      \"experience_level\": 3,\n      \"experience_label\": \"Intermediate\",\n      \"achievements\": \"MMA amateur record 2-1\",\n      \"weight_kg\": 73,\n      \"height_cm\": 180,\n      \"weight_category\": \"middle\",\n      \"weight_category_label\": \"Middle\",\n      \"city\": \"Almaty\",\n      \"avatar_url\": \"\",\n      \"total_fights\": 1\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Auto match",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"auto\": true,\n  \"rating_range\": 300\n}"
+            },
+            "url": "{{base_url}}/matchmaking/find/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 2,\n  \"results\": [\n    {\n      \"id\": 3,\n      \"user_id\": 3,\n      \"username\": \"arman_mma\",\n      \"email\": \"arman@example.com\",\n      \"rating\": 1100,\n      \"experience_level\": 3,\n      \"experience_label\": \"Intermediate\",\n      \"achievements\": \"MMA amateur record 2-1\",\n      \"weight_kg\": 73,\n      \"height_cm\": 180,\n      \"weight_category\": \"middle\",\n      \"weight_category_label\": \"Middle\",\n      \"city\": \"Almaty\",\n      \"avatar_url\": \"\",\n      \"total_fights\": 1\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fights",
+      "item": [
+        {
+          "name": "List my fights",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/fights/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"initiator\": 2,\n    \"initiator_username\": \"ali_kg\",\n    \"opponent\": 3,\n    \"opponent_username\": \"arman_mma\",\n    \"winner\": null,\n    \"winner_username\": null,\n    \"location\": 1,\n    \"location_detail\": {\n      \"id\": 1,\n      \"name\": \"Fight Club Almaty\",\n      \"address\": \"Almaty, Abay Avenue 10\"\n    },\n    \"martial_art_rule\": 1,\n    \"martial_art_detail\": {\n      \"id\": 1,\n      \"name\": \"Boxing\",\n      \"number_of_rounds\": 3,\n      \"round_duration_minutes\": 3\n    },\n    \"date\": \"2026-12-01T12:00:00+06:00\",\n    \"duration_minutes\": 60,\n    \"is_sparring\": true,\n    \"challenge_status\": \"pending\",\n    \"challenge_status_label\": \"Pending\",\n    \"is_finished\": false,\n    \"opponent_review\": \"\",\n    \"opponent_skill_rating\": null,\n    \"rating_delta\": 0,\n    \"created_at\": \"2026-04-22T01:00:00+06:00\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create sparring challenge",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const data = pm.response.json();",
+                  "  pm.collectionVariables.set('fight_id', data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"opponent\": {{opponent_id}},\n  \"location\": {{location_id}},\n  \"martial_art_rule\": {{martial_art_id}},\n  \"date\": \"2026-12-01T12:00:00+06:00\",\n  \"duration_minutes\": 60,\n  \"is_sparring\": true\n}"
+            },
+            "url": "{{base_url}}/fights/"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"initiator\": 2,\n  \"initiator_username\": \"ali_kg\",\n  \"opponent\": 3,\n  \"opponent_username\": \"arman_mma\",\n  \"winner\": null,\n  \"winner_username\": null,\n  \"location\": 1,\n  \"location_detail\": {\n    \"id\": 1,\n    \"name\": \"Fight Club Almaty\",\n    \"address\": \"Almaty, Abay Avenue 10\"\n  },\n  \"martial_art_rule\": 1,\n  \"martial_art_detail\": {\n    \"id\": 1,\n    \"name\": \"Boxing\",\n    \"number_of_rounds\": 3,\n    \"round_duration_minutes\": 3\n  },\n  \"date\": \"2026-12-01T12:00:00+06:00\",\n  \"duration_minutes\": 60,\n  \"is_sparring\": true,\n  \"challenge_status\": \"pending\",\n  \"challenge_status_label\": \"Pending\",\n  \"is_finished\": false,\n  \"opponent_review\": \"\",\n  \"opponent_skill_rating\": null,\n  \"rating_delta\": 0,\n  \"created_at\": \"2026-04-22T01:00:00+06:00\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get fight detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/fights/{{fight_id}}/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"initiator\": 2,\n  \"initiator_username\": \"ali_kg\",\n  \"opponent\": 3,\n  \"opponent_username\": \"arman_mma\",\n  \"winner\": null,\n  \"winner_username\": null,\n  \"location\": 1,\n  \"location_detail\": {\n    \"id\": 1,\n    \"name\": \"Fight Club Almaty\",\n    \"address\": \"Almaty, Abay Avenue 10\"\n  },\n  \"martial_art_rule\": 1,\n  \"martial_art_detail\": {\n    \"id\": 1,\n    \"name\": \"Boxing\",\n    \"number_of_rounds\": 3,\n    \"round_duration_minutes\": 3\n  },\n  \"date\": \"2026-12-01T12:00:00+06:00\",\n  \"duration_minutes\": 60,\n  \"is_sparring\": true,\n  \"challenge_status\": \"pending\",\n  \"challenge_status_label\": \"Pending\",\n  \"is_finished\": false,\n  \"opponent_review\": \"\",\n  \"opponent_skill_rating\": null,\n  \"rating_delta\": 0,\n  \"created_at\": \"2026-04-22T01:00:00+06:00\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update fight",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"duration_minutes\": 75,\n  \"date\": \"2026-12-02T12:00:00+06:00\"\n}"
+            },
+            "url": "{{base_url}}/fights/{{fight_id}}/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"initiator\": 2,\n  \"initiator_username\": \"ali_kg\",\n  \"opponent\": 3,\n  \"opponent_username\": \"arman_mma\",\n  \"winner\": null,\n  \"winner_username\": null,\n  \"location\": 1,\n  \"location_detail\": {\n    \"id\": 1,\n    \"name\": \"Fight Club Almaty\",\n    \"address\": \"Almaty, Abay Avenue 10\"\n  },\n  \"martial_art_rule\": 1,\n  \"martial_art_detail\": {\n    \"id\": 1,\n    \"name\": \"Boxing\",\n    \"number_of_rounds\": 3,\n    \"round_duration_minutes\": 3\n  },\n  \"date\": \"2026-12-02T12:00:00+06:00\",\n  \"duration_minutes\": 75,\n  \"is_sparring\": true,\n  \"challenge_status\": \"pending\",\n  \"challenge_status_label\": \"Pending\",\n  \"is_finished\": false,\n  \"opponent_review\": \"\",\n  \"opponent_skill_rating\": null,\n  \"rating_delta\": 0,\n  \"created_at\": \"2026-04-22T01:00:00+06:00\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Respond to challenge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"accept\"\n}"
+            },
+            "url": "{{base_url}}/fights/{{fight_id}}/respond/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Challenge accepted.\",\n  \"fight\": {\n    \"id\": 1,\n    \"initiator\": 2,\n    \"initiator_username\": \"ali_kg\",\n    \"opponent\": 3,\n    \"opponent_username\": \"arman_mma\",\n    \"winner\": null,\n    \"winner_username\": null,\n    \"location\": 1,\n    \"location_detail\": {\n      \"id\": 1,\n      \"name\": \"Fight Club Almaty\",\n      \"address\": \"Almaty, Abay Avenue 10\"\n    },\n    \"martial_art_rule\": 1,\n    \"martial_art_detail\": {\n      \"id\": 1,\n      \"name\": \"Boxing\",\n      \"number_of_rounds\": 3,\n      \"round_duration_minutes\": 3\n    },\n    \"date\": \"2026-12-02T12:00:00+06:00\",\n    \"duration_minutes\": 75,\n    \"is_sparring\": true,\n    \"challenge_status\": \"accepted\",\n    \"challenge_status_label\": \"Accepted\",\n    \"is_finished\": false,\n    \"opponent_review\": \"\",\n    \"opponent_skill_rating\": null,\n    \"rating_delta\": 0,\n    \"created_at\": \"2026-04-22T01:00:00+06:00\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Finish sparring",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"opponent_review\": \"Good technical sparring partner with strong footwork.\",\n  \"opponent_skill_rating\": 8\n}"
+            },
+            "url": "{{base_url}}/fights/{{fight_id}}/finish/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Sparring finished. Both fighters received rating points.\",\n  \"fight\": {\n    \"id\": 1,\n    \"initiator\": 2,\n    \"initiator_username\": \"ali_kg\",\n    \"opponent\": 3,\n    \"opponent_username\": \"arman_mma\",\n    \"winner\": null,\n    \"winner_username\": null,\n    \"location\": 1,\n    \"location_detail\": {\n      \"id\": 1,\n      \"name\": \"Fight Club Almaty\",\n      \"address\": \"Almaty, Abay Avenue 10\"\n    },\n    \"martial_art_rule\": 1,\n    \"martial_art_detail\": {\n      \"id\": 1,\n      \"name\": \"Boxing\",\n      \"number_of_rounds\": 3,\n      \"round_duration_minutes\": 3\n    },\n    \"date\": \"2026-04-20T12:00:00+06:00\",\n    \"duration_minutes\": 75,\n    \"is_sparring\": true,\n    \"challenge_status\": \"accepted\",\n    \"challenge_status_label\": \"Accepted\",\n    \"is_finished\": true,\n    \"opponent_review\": \"Good technical sparring partner with strong footwork.\",\n    \"opponent_skill_rating\": 8,\n    \"rating_delta\": 20,\n    \"created_at\": \"2026-04-19T01:00:00+06:00\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete fight",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/fights/{{fight_id}}/"
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI Coach",
+      "item": [
+        {
+          "name": "Ask AI Coach",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"How should I warm up safely before sparring?\",\n  \"history\": []\n}"
+            },
+            "url": "{{base_url}}/ai-coach/chat/"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"reply\": \"Start with 5 to 10 minutes of light movement, then add dynamic mobility for shoulders, hips, knees, and ankles. Finish with easy sport-specific drills before increasing speed. Keep the first round controlled and stop if you feel sharp pain, dizziness, or unusual fatigue.\"\n}"
+            },
+            {
+              "name": "503 Not Configured",
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": \"AI Coach is not configured. Set OPENAI_API_KEY on the backend.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

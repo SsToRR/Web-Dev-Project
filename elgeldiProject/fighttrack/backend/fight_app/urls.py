@@ -9,6 +9,7 @@ urlpatterns = [
     path("auth/login/", views.login_view, name="login"),
     path("auth/logout/", views.logout_view, name="logout"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("ai-coach/chat/", views.ai_coach_chat, name="ai-coach-chat"),
     path("fights/", views.FightRecordListCreate.as_view(), name="fight-list-create"),
     path("fights/<int:pk>/", views.FightRecordDetail.as_view(), name="fight-detail"),
     path("fights/<int:pk>/respond/", views.respond_to_challenge, name="fight-respond"),
