@@ -12,21 +12,9 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-export class HomeComponent implements OnInit {
-  leaders: FighterProfile[] = [];
+export class HomeComponent {
   isLoading = true;
 
   constructor(public auth: AuthService, private api: ApiService) {}
 
-  ngOnInit() {
-    this.api.getLeaderboard({ limit: 4 }).subscribe({
-      next: (response) => {
-        this.leaders = response.results;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      },
-    });
-  }
 }

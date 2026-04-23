@@ -38,7 +38,6 @@ class FighterProfileSerializer(serializers.ModelSerializer):
             "weight_category",
             "weight_category_label",
             "city",
-            "avatar_url",
             "total_fights",
         ]
 
@@ -173,7 +172,6 @@ class RegisterSerializer(serializers.Serializer):
     weight_kg = serializers.FloatField(required=False, allow_null=True, min_value=30)
     height_cm = serializers.IntegerField(required=False, allow_null=True, min_value=120, max_value=250)
     city = serializers.CharField(required=False, allow_blank=True, max_length=100)
-    avatar_url = serializers.URLField(required=False, allow_blank=True)
 
     def validate_username(self, value):
         if User.objects.filter(username__iexact=value).exists():
@@ -192,7 +190,6 @@ class RegisterSerializer(serializers.Serializer):
             "weight_kg": validated_data.pop("weight_kg", None),
             "height_cm": validated_data.pop("height_cm", None),
             "city": validated_data.pop("city", ""),
-            "avatar_url": validated_data.pop("avatar_url", ""),
         }
         validated_data.pop("password_confirm", None)
         password = validated_data.pop("password")
@@ -215,8 +212,7 @@ class FighterProfileUpdateSerializer(serializers.ModelSerializer):
             "achievements",
             "weight_kg",
             "height_cm",
-            "city",
-            "avatar_url",
+            "city"
         ]
 
     def validate_username(self, value):

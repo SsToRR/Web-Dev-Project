@@ -18,7 +18,7 @@ def resolve_weight_category(weight_kg):
         if weight_kg >= min_weight and (max_weight is None or weight_kg < max_weight):
             return code, label
 
-    return WEIGHT_CATEGORY_RULES[-1][0], WEIGHT_CATEGORY_RULES[-1][1]
+    return WEIGHT_CATEGORY_RULES[-1][0], WEIGHT_CATEGORY_RULES[-1][1] 
 
 
 class Location(models.Model):
@@ -82,8 +82,6 @@ class FighterProfile(models.Model):
     class Meta:
         verbose_name = "Профиль бойца"
         verbose_name_plural = "Профили бойцов"
-
-    avatar_url = models.URLField(blank=True, verbose_name="\u0410\u0432\u0430\u0442\u0430\u0440")
 
     @property
     def weight_category_code(self):
